@@ -1,0 +1,47 @@
+name: 'AO Keystore Action'
+description: 'This will create .jks file and validate'
+branding:
+  icon: 'lock'
+  color: 'red'
+
+inputs:
+  base64-keystore:
+    description: The Base64-encoded content of the keystore file.
+    required: true
+  keystore-password:
+    description: Password of the keystore file.
+    required: true
+  keystore-path:
+    description: The location and file where the decoded keystore file will be written.
+    required: false
+    default: 'keystore.jks' # Default value for keystore path
+  key-alias:
+    description: The alias of the key in the keystore.
+    required: true
+  key-password:
+    description: The password for the keystore and key alias.
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        # Resolve keystore path
+        RESOLVED_PATH=$(realpath -m "${{ inputs.keystore-path }}")
+
+        # Ensure the directory for the keystore path exists
+        mkdir -p "$(dirname "$RESOLVED_PATH")"
+
+        # Decode the Base64 keystore and write it to the resolved location
+        echo "${{ inputs.base64-keystore }}" | base64 --decode > "$RESOLVED_PATH"
+
+        # Validate the keystore
+        if keytool -list -v -keystore "$RESOLVED_PATH" -alias "${{ inputs.key-alias }}" -storepass "${{ inputs.key-password }}"; then
+          echo "Keystore validation succeeded."
+          echo "isValid=true" >> $GITHUB_ENV
+        else
+          echo "Keystore validation failed."
+          echo "isValid=false" >> $GITHUB_ENV
+          exit 1
+        fi
+      shell: bash
