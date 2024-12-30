@@ -16,9 +16,9 @@ build process.
 
 ## Outputs
 
-| Output Name | Description                                         |
-|-------------|-----------------------------------------------------|
-| `isValid`   | `true` if the keystore is valid, `false` otherwise. |
+| Output Name       | Description                                         |
+|-------------------|-----------------------------------------------------|
+| `isKeystoreValid` | `true` if the keystore is valid, `false` otherwise. |
 
 ## Example Usage
 
@@ -59,11 +59,11 @@ jobs:
           key-password: changeit
 
       - name: Validate Output
-        if: env.isValid != 'true'
+        if: env.isKeystoreValid != 'true'
         run: |
           echo "Keystore validation failed!"
           exit 1
 
       - name: Success Message
-        if: env.isValid == 'true'
+        if: env.isKeystoreValid == 'true'
         run: echo "Keystore validation passed!"
