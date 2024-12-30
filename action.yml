@@ -38,10 +38,10 @@ runs:
         # Validate the keystore
         if keytool -list -v -keystore "$RESOLVED_PATH" -alias "${{ inputs.key-alias }}" -storepass "${{ inputs.key-password }}"; then
           echo "Keystore validation succeeded."
-          echo "isValid=true" >> $GITHUB_ENV
+          echo "isKeystoreValid=true" >> $GITHUB_ENV
         else
           echo "Keystore validation failed."
-          echo "isValid=false" >> $GITHUB_ENV
+          echo "isKeystoreValid=false" >> $GITHUB_ENV
           exit 1
         fi
       shell: bash
